@@ -1,0 +1,157 @@
+1.group by:
+mysql> select disease,count(*) as patient_cout from patient group by disease;
++---------+--------------+
+| disease | patient_cout |
++---------+--------------+
+| aids    |            1 |
+| cold    |            1 |
+| dengue  |            1 |
+| fever   |            2 |
+| injury  |            1 |
+| thyroid |            1 |
++---------+--------------+
+2.nested
+mysql> select mr_id from patient where mr_id in(select mr_id from room where bill>6000);
++-------+
+| mr_id |
++-------+
+| p01   |
+| p05   |
++-------+
+3.union
+mysql> select h_code from doctor union select h_code from room;
++--------+
+| h_code |
++--------+
+| h01    |
+| h02    |
+| h03    |
+| h04    |
+| h05    |
++--------+
+4.view
+mysql> create view hosp as select * from hospital where speciality='heart';$$
+mysql> select * from hosp;$$
++--------+----------+------------+------------+
+| h_code | h_name   | speciality | address    |
++--------+----------+------------+------------+
+| h02    | omni     | heart      | gachibowli |
+| h05    | kamineni | heart      | lb nagar   |
++--------+----------+------------+------------+
+5.procedure
+mysql> create procedure speciality_hosp()
+    -> begin
+    -> select h.h_name as heart_speciality_hosp,h.address from hospital h where speciality='heart';
+    -> select h.h_name as neuro_speciality_hosp,h.address from hospital h where speciality='neural';
+    -> select h.h_name as skin_speciality_hosp,h.address from hospital h where speciality='skin';
+    -> select h.h_name as multi_speciality_hosp,h.address from hospital h where speciality='general';
+    -> end
+    -> $$
+mysql> call speciality_hosp();$$
++-----------------------+------------+
+| heart_speciality_hosp | address    |
++-----------------------+------------+
+| omni                  | gachibowli |
+| kamineni              | lb nagar   |
++-----------------------+------------+
++-----------------------+----------+
+| neuro_speciality_hosp | address  |
++-----------------------+----------+
+| kims                  | kondapur |
++-----------------------+----------+
++----------------------+---------+
+| skin_speciality_hosp | address |
++----------------------+---------+
+| yashoda              | sec-bad |
++----------------------+---------+
++-----------------------+----------+
+| multi_speciality_hosp | address  |
++-----------------------+----------+
+| apollo                | ameerpet |
++-----------------------+----------+
+mysql> Delimiter $$
+mysql> Create procedure update_patient_name(INOUT patient_id varchar(20),updated_patient_name varchar(20))
+    -> Update patient set p_name=patient_name where mr_id=p_id;
+    -> Select mr_id into  patient_id ,p_name into  updated_patient_name from patient where mr_id=p_id;
+    -> end
+    -> $$
+mysql> set @patient_id='p01',@updated_patient_name='raju';$$
+mysql> select @patient_id,@updated_patient_name;$$
++-------------+-----------------------+
+| @patient_id | @updated_patient_name |
++-------------+-----------------------+
+| p01         | raju                  |
++-------------+-----------------------+
+mysql> delimiter $$
+mysql> create procedure finance_report(OUT total_income decimal(20,3))
+    -> begin
+    -> select sum(p.paid_amount) into total_income from patient p;
+    -> Select sum(p.bill)-sum(p.paid_amount) as due_amount from patient p;
+    -> select p.p_name as bill_not_paid_patients from patient p where paid_amount='0.0';
+    -> end;
+    -> $$
+mysql> call finance_report(@total_income);$$
++------------+
+| due_amount |
++------------+
+|  14000.000 |
++------------+
++------------------------+
+| bill_not_paid_patients |
++------------------------+
+| naveen                 |
++------------------------+
+mysql> select @total_income;$$
++---------------+
+| @total_income |
++---------------+
+|     14500.000 |
++---------------+
+7.trigger
+mysql> delimiter $$
+mysql> create trigger discharged_list
+    ->  after update
+    -> on patient
+    -> for each row
+    -> begin
+    ->  if new.bill=new.paid_amount then insert into discharged(mr_id,p_name)values (new.mr_id,new.p_name);
+    -> end if;
+    -> end
+    -> ;
+    -> $$
+mysql> update patient set paid_amount='7000.00' where mr_id='p01';$$
+mysql> select * from discharged;$$
++----+--------+-------+
+| id | p_name | mr_id |
++----+--------+-------+
+|  1 | naveen | p01   |
++----+--------+-------+
+8.order by
+mysql> select d_name as doctor_name,salary from doctor order by salary desc;
++-------------+-----------+
+| doctor_name | salary    |
++-------------+-----------+
+| kalpana     | 100000.00 |
+| ramesh      |  90000.00 |
+| satish      |  79000.00 |
+| siri        |  70000.00 |
+| ganesh      |  65000.00 |
+| prasad      |  50000.00 |
+| madhu       |  23000.00 |
++-------------+-----------+
+9.having
+mysql> select count(age),age from patient group by age having count(age)>1;
++------------+------+
+| count(age) | age  |
++------------+------+
+|          2 |   31 |
++------------+------+
+10.query
+mysql> select p.p_name,h.h_name,r.r_id,dr.d_name from patient p,room r,doctor dr,hospital h where p.mr_id='p01' and p.r_id=r.r_id and r.h_code=dr.h_code and dr.h_code=h.h_code;$$
++--------+--------+------+--------+
+| p_name | h_name | r_id | d_name |
++--------+--------+------+--------+
+| naveen | apollo | r01  | ramesh |
+| naveen | apollo | r01  | siri   |
+| naveen | apollo | r01  | satish |
++--------+--------+------+--------+
