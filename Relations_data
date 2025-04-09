@@ -1,0 +1,43 @@
+docter data
+| rg_no | d_name  | gender | doj        | specialization  | salary    | h_code |
++-------+---------+--------+------------+-----------------+-----------+--------+
+| d01   | ramesh  | m      | 1990-02-01 | general         |  90000.00 | h01    |
+| d02   | siri    | f      | 2000-07-09 | gynecolagist    |  70000.00 | h01    |
+| d03   | ganesh  | m      | 2014-03-06 | heart           |  65000.00 | h02    |
+| d04   | kalpana | f      | 2019-10-12 | neuroligist     | 100000.00 | h03    |
+| d05   | madhu   | f      | 2022-12-30 | skin specialist |  23000.00 | h04    |
+| d06   | prasad  | m      | 2017-07-30 | general         |  50000.00 | h05    |
+| d07   | satish  | m      | 2020-05-01 | pediatrician    |  79000.00 | h01    |
+hospital data
++--------+----------+------------+------------+
+| h_code | h_name   | speciality | address    |
++--------+----------+------------+------------+
+| h01    | apollo   | general    | ameerpet   |
+| h02    | omni     | heart      | gachibowli |
+| h03    | kims     | neural     | kondapur   |
+| h04    | yashoda  | skin       | sec-bad    |
+| h05    | kamineni | heart      | lb nagar   |
++--------+----------+------------+------------+
+room data
+select * from room;
++------+-------------+----------+-----------+--------+
+| r_id | type        | charge   | available | h_code |
++------+-------------+----------+-----------+--------+
+| r01  | ac          | 10000.00 | 3         | h01    |
+| r02  | non-ac      |  5000.00 | 10        | h01    |
+| r03  | non-ac      |  5000.00 | 7         | h02    |
+| r04  | vip         | 32000.00 | 5         | h05    |
+| r05  | general     |   100.00 | 20        | h03    |
+| r06  | icu         | 15000.00 | 5         | h04    |
+| r07  | share cabin |  1000.00 | 9         | h04    |
+patient data
++-------+----------+------+--------+---------+----------+------+-------------+
+| mr_id | p_name   | age  | gender | disease | bill     | r_id | paid_amount |
++-------+----------+------+--------+---------+----------+------+-------------+
+| p01   | naveen   |   45 | m      | thyroid |  7000.00 | r01  |       0.000 |
+| p02   | santhosh |   26 | m      | cold    |  2000.00 | r03  |    2000.000 |
+| p03   | kavitha  |   30 | f      | dengue  |  1000.00 | r07  |     500.000 |
+| p04   | nagin    |   20 | f      | injury  |  2500.00 | r04  |    1000.000 |
+| p05   | kiram    |   33 | m      | aids    | 15000.00 | r06  |   10000.000 |
+| p06   | ramu     |   31 | m      | fever   |   500.00 | r06  |     500.000 |
+| p07   | vandana  |   31 | f      | fever   |   500.00 | r02  |     500.000 |
